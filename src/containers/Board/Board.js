@@ -73,16 +73,17 @@ const Board = () => {
 
   useEffect(() => {
     return () => {
-      AxiosNote.get('note.json').then((response) => {
+      AxiosNote.get('/notes').then((response) => {
         if (response.data) {
           const data = Object.keys(response.data);
           for (let index = 0; index < data.length; index++) {
             const position = positionCalculationHandler(getKey(false));
+            const entity = response.data[data[index]];
             dispatch({
               note: {
                 note: {
-                  id: data[index],
-                  title: response.data[data[index]].title,
+                  id: entity.id,
+                  title: entity.title,
                 },
                 style: position,
               },
@@ -95,10 +96,10 @@ const Board = () => {
   }, [getKey, positionCalculationHandler]);
 
   const onSaveHandler = (item) => {
-    AxiosNote.post('note.json', item).then((response) => {
+    AxiosNote.post('/notes', item).then((response) => {
       dispatch({
         note: {
-          note: { id: response.data.name, ...item },
+          note: { id: response.data.id, ...item },
           style: style,
         },
         type: 'ADD',
@@ -108,7 +109,7 @@ const Board = () => {
   };
 
   const onEditHandler = (item) => {
-    AxiosNote.patch(`note/${item.id}.json`, item).then((response) => {
+    AxiosNote.patch(`notes/${item.id}`, { title: item.title }).then((response) => {
       const loadedNotes = notes;
       let updatedNote = loadedNotes.find((x) => x.note.id === item.id);
       updatedNote = { ...item };
@@ -118,7 +119,7 @@ const Board = () => {
   };
 
   const onDeleteHandler = (id) => {
-    AxiosNote.delete(`note/${id}.json`).then((response) => {
+    AxiosNote.delete(`notes/${id}`).then((response) => {
       let updatedNotes = notes.filter((x) => x.note.id !== id);
       dispatch({ notes: updatedNotes, type: 'DELETE' });
     });

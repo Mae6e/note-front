@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 
 const AxiosNote = axios.create({
-    baseURL:'https://todolist-12876-default-rtdb.firebaseio.com/'
-})
+  baseURL: process.env.REACT_APP_API_URL,
+});
 
-export default AxiosNote
+export default AxiosNote;
