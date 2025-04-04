@@ -53,6 +53,7 @@ const Board = () => {
           setPositionMap(positionMap.set(key, false));
         });
         items = [...positionMap].find(([key, value]) => val === value);
+        if (!items) return;
         return items[0];
       }
     },
@@ -72,27 +73,25 @@ const Board = () => {
   };
 
   useEffect(() => {
-    return () => {
-      AxiosNote.get('/notes').then((response) => {
-        if (response.data) {
-          const data = Object.keys(response.data);
-          for (let index = 0; index < data.length; index++) {
-            const position = positionCalculationHandler(getKey(false));
-            const entity = response.data[data[index]];
-            dispatch({
+    AxiosNote.get('/notes').then((response) => {
+      if (response.data) {
+        const data = Object.keys(response.data);
+        for (let index = 0; index < data.length; index++) {
+          const position = positionCalculationHandler(getKey(false));
+          const entity = response.data[data[index]];
+          dispatch({
+            note: {
               note: {
-                note: {
-                  id: entity.id,
-                  title: entity.title,
-                },
-                style: position,
+                id: entity.id,
+                title: entity.title,
               },
-              type: 'SET',
-            });
-          }
+              style: position,
+            },
+            type: 'SET',
+          });
         }
-      });
-    };
+      }
+    });
   }, [getKey, positionCalculationHandler]);
 
   const onSaveHandler = (item) => {
